@@ -1,3 +1,7 @@
+"""
+Date: 2/10/2025 
+This file generates random romaji for learning hiragana and katakana 
+"""
 import random
 
 vowels = ["a", "i", "u", "e", "o"]
@@ -15,6 +19,15 @@ def generate_romaji():
     
     if consonant == "w" and vowel in ["i", "u", "e"]: 
         vowel = random.choice(["a", "o"])
+
+    if consonant == "s" and vowel == "i": 
+        return "shi"
+    elif consonant == "t" and vowel == "i": 
+        return "chi"
+    elif consonant == "t" and vowel == "u": 
+        return "tsu"
+    elif consonant == "h" and vowel == "u":
+        return "fu"
     
     return consonant + vowel
 
