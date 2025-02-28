@@ -23,20 +23,24 @@ draw_color = BLACK
 last_pos = None 
 
 romaji = {
-    "a": 3, "i": 0, "u": 0, "e": 1, "o": 2,
-    "ka": 1, "ki": 0, "ku": 0, "ke": 1, "ko": 0,
-    "sa": 2, "shi": 1, "su": 0, "se": 0, "so": 0,
-    "ta": 3, "chi": 0, "tsu": 0, "te": 3, "to": 1,
-    "na": 0, "ni": 0, "nu": 1, "ne": 1, "no": 1,
-    "ha": 0, "hi": 2, "fu": 1, "he": 1, "ho": 1,
-    "ma": 4, "mi": 3, "mu": 1, "me": 0, "mo": 1,
-    "ya": 0, "yu": 0, "yo": 2,
-    "ra": 4, "ri": 1, "ru": 2, "re": 1, "ro": 0,
-    "wa": 1, "wo": 1,
-    "n": 2
-}
-current_romaji = random.choice(list(romaji.keys()))
-romaji[current_romaji] += 1
+    'a': 4, 'i': 2, 'u': 2, 'e': 4, 'o': 3, 
+    'ka': 3, 'ki': 2, 'ku': 3, 'ke': 6, 'ko': 3, 
+    'sa': 5, 'shi': 3, 'su': 5, 'se': 4, 'so': 3, 
+    'ta': 5, 'chi': 2, 'tsu': 6, 'te': 6, 'to': 4, 
+    'na': 3, 'ni': 5, 'nu': 4, 'ne': 4, 'no': 3, 
+    'ha': 4, 'hi': 5, 'fu': 3, 'he': 3, 'ho': 4, 
+    'ma': 5, 'mi': 5, 'mu': 6, 'me': 3, 'mo': 5, 
+    'ya': 6, 'yu': 4, 'yo': 3, 
+    'ra': 5, 'ri': 6, 'ru': 5, 're': 3, 'ro': 2, 
+    'wa': 2, 'wo': 5, 
+    'n': 4}
+
+def select_weighted_romaji():
+    # total_count = sum(romaji.values()) + 1  
+    weights = [1 / (count + 1) for count in romaji.values()]  
+    return random.choices(list(romaji.keys()), weights=weights, k=1)[0]
+
+current_romaji = select_weighted_romaji()
 # ga, gi, gu, ge, go,
 # za, ji, zu, ze, zo,
 # da, ji, zu, de, do,
@@ -94,10 +98,10 @@ while running:
             elif event.key == pygame.K_q:  # press 'Q' to exit 
                 running = False 
             elif event.key == pygame.K_RETURN:  # save drawing to file
+                romaji[current_romaji] += 1
                 file_path = os.path.join(data_dir, f"{current_romaji}_{romaji[current_romaji]}.png")
                 pygame.image.save(screen, file_path)
-                current_romaji = random.choice(list(romaji.keys()))
-                romaji[current_romaji] += 1
+                current_romaji = select_weighted_romaji()
                 draw_romaji() 
                 print(f"Drawing saved to {file_path}")
     
