@@ -14,19 +14,29 @@ import random
 WIDTH, HEIGHT = 800, 600
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-ROMAJI = [
-    "a", "i", "u", "e", "o",
-    "ka", "ki", "ku", "ke", "ko",
-    "sa", "shi", "su", "se", "so",
-    "ta", "chi", "tsu", "te", "to",
-    "na", "ni", "nu", "ne", "no",
-    "ha", "hi", "fu", "he", "ho",
-    "ma", "mi", "mu", "me", "mo",
-    "ya", "yu", "yo",
-    "ra", "ri", "ru", "re", "ro",
-    "wa", "wo",
-    "n"
-]
+
+# variables
+running = True
+drawing = False 
+radius = 5 
+draw_color = BLACK 
+last_pos = None 
+
+romaji = {
+    "a": 3, "i": 0, "u": 0, "e": 1, "o": 2,
+    "ka": 1, "ki": 0, "ku": 0, "ke": 1, "ko": 0,
+    "sa": 2, "shi": 1, "su": 0, "se": 0, "so": 0,
+    "ta": 3, "chi": 0, "tsu": 0, "te": 3, "to": 1,
+    "na": 0, "ni": 0, "nu": 1, "ne": 1, "no": 1,
+    "ha": 0, "hi": 2, "fu": 1, "he": 1, "ho": 1,
+    "ma": 4, "mi": 3, "mu": 1, "me": 0, "mo": 1,
+    "ya": 0, "yu": 0, "yo": 2,
+    "ra": 4, "ri": 1, "ru": 2, "re": 1, "ro": 0,
+    "wa": 1, "wo": 1,
+    "n": 2
+}
+current_romaji = random.choice(list(romaji.keys()))
+romaji[current_romaji] += 1
 # ga, gi, gu, ge, go,
 # za, ji, zu, ze, zo,
 # da, ji, zu, de, do,
@@ -44,27 +54,12 @@ ROMAJI = [
 # bya, byu, byo,
 # pya, pyu, pyo
 
-# variables
-running = True
-drawing = False 
-radius = 5 
-draw_color = BLACK 
-last_pos = None 
-
-romaji_count = {} 
-current_romaji = random.choice(ROMAJI)
 
 def draw_romaji():
-    """Draws the current Romaji character at the top-center of the screen."""
+    screen.fill(WHITE)
     text_surface = font.render(current_romaji, True, BLACK)
     text_rect = text_surface.get_rect(center=(WIDTH // 2, 50))
     screen.blit(text_surface, text_rect)
-
-    if current_romaji not in romaji_count:
-        romaji_count[current_romaji] = 1
-    else:
-        romaji_count[current_romaji] += 1
-    
 
 # initialize pygame
 pygame.init()
@@ -72,7 +67,6 @@ pygame.init()
 # setup display
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Handwriting Panel")
-screen.fill(WHITE)
 font = pygame.font.Font(None, 50)
 draw_romaji() 
 
@@ -92,7 +86,6 @@ while running:
             last_pos = None
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_c:  # press 'C' to clear screen
-                screen.fill(WHITE)
                 draw_romaji() 
             elif event.key == pygame.K_UP:  # increase brush size
                 radius = min(radius + 1, 8)
@@ -101,10 +94,10 @@ while running:
             elif event.key == pygame.K_q:  # press 'Q' to exit 
                 running = False 
             elif event.key == pygame.K_RETURN:  # save drawing to file
-                file_path = os.path.join(data_dir, f"{current_romaji}_{romaji_count[current_romaji]}.png")
+                file_path = os.path.join(data_dir, f"{current_romaji}_{romaji[current_romaji]}.png")
                 pygame.image.save(screen, file_path)
-                current_romaji = random.choice(ROMAJI)
-                screen.fill(WHITE)
+                current_romaji = random.choice(list(romaji.keys()))
+                romaji[current_romaji] += 1
                 draw_romaji() 
                 print(f"Drawing saved to {file_path}")
     
@@ -118,3 +111,4 @@ while running:
     pygame.display.update()
 
 pygame.quit()
+print(romaji)
