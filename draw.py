@@ -1,28 +1,85 @@
+"""
+Date: 2/13/2025 
+This file pops up a drawing panel for you to draw. 
+- use 'C' to clear panel 
+- use 'Q' to quit 
+- use 'Enter' to save to file 
+- use UP and DOWN to resize the brush 
+"""
+import os 
 import pygame
+import random
 
-# Initialize pygame
-pygame.init()
-
-# Set up display
+# definitions 
 WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Mouse Drawing")
-
-# Define colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+ROMAJI = [
+    "a", "i", "u", "e", "o",
+    "ka", "ki", "ku", "ke", "ko",
+    "sa", "shi", "su", "se", "so",
+    "ta", "chi", "tsu", "te", "to",
+    "na", "ni", "nu", "ne", "no",
+    "ha", "hi", "fu", "he", "ho",
+    "ma", "mi", "mu", "me", "mo",
+    "ya", "yu", "yo",
+    "ra", "ri", "ru", "re", "ro",
+    "wa", "wo",
+    "n"
+]
+# ga, gi, gu, ge, go,
+# za, ji, zu, ze, zo,
+# da, ji, zu, de, do,
+# ba, bi, bu, be, bo,
+# pa, pi, pu, pe, po,
+# kya, kyu, kyo,
+# sha, shu, sho,
+# cha, chu, cho,
+# nya, nyu, nyo,
+# hya, hyu, hyo,
+# mya, myu, myo,
+# rya, ryu, ryo,
+# gya, gyu, gyo,
+# ja, ju, jo,
+# bya, byu, byo,
+# pya, pyu, pyo
 
-# Fill background with white
-screen.fill(WHITE)
-
-# Variables
+# variables
 running = True
-drawing = False  # Track if mouse is pressed
-draw_color = BLACK  # Default drawing color
-radius = 5  # Brush size
-last_pos = None  # Store last mouse position
+drawing = False 
+radius = 5 
+draw_color = BLACK 
+last_pos = None 
 
-# Main loop
+romaji_count = {} 
+current_romaji = random.choice(ROMAJI)
+
+def draw_romaji():
+    """Draws the current Romaji character at the top-center of the screen."""
+    text_surface = font.render(current_romaji, True, BLACK)
+    text_rect = text_surface.get_rect(center=(WIDTH // 2, 50))
+    screen.blit(text_surface, text_rect)
+
+    if current_romaji not in romaji_count:
+        romaji_count[current_romaji] = 1
+    else:
+        romaji_count[current_romaji] += 1
+    
+
+# initialize pygame
+pygame.init()
+
+# setup display
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Handwriting Panel")
+screen.fill(WHITE)
+font = pygame.font.Font(None, 50)
+draw_romaji() 
+
+data_dir = os.path.join('.', 'data', 'hiragana')
+os.makedirs(data_dir, exist_ok=True)
+
+# main loop
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -34,14 +91,24 @@ while running:
             drawing = False
             last_pos = None
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_c:  # Press 'C' to clear screen
+            if event.key == pygame.K_c:  # press 'C' to clear screen
                 screen.fill(WHITE)
-            elif event.key == pygame.K_UP:  # Increase brush size
-                radius += 1
-            elif event.key == pygame.K_DOWN:  # Decrease brush size
-                radius = max(1, radius - 1)
+                draw_romaji() 
+            elif event.key == pygame.K_UP:  # increase brush size
+                radius = min(radius + 1, 8)
+            elif event.key == pygame.K_DOWN:  # decrease brush size
+                radius = max(3, radius - 1)
+            elif event.key == pygame.K_q:  # press 'Q' to exit 
+                running = False 
+            elif event.key == pygame.K_RETURN:  # save drawing to file
+                file_path = os.path.join(data_dir, f"{current_romaji}_{romaji_count[current_romaji]}.png")
+                pygame.image.save(screen, file_path)
+                current_romaji = random.choice(ROMAJI)
+                screen.fill(WHITE)
+                draw_romaji() 
+                print(f"Drawing saved to {file_path}")
     
-    # Drawing with mouse movement
+    # drawing with mouse movement
     if drawing:
         mouse_pos = pygame.mouse.get_pos()
         if last_pos:
@@ -51,105 +118,3 @@ while running:
     pygame.display.update()
 
 pygame.quit()
-
-# import pygame
-
-# # Initialize pygame
-# pygame.init()
-
-# # Set up display
-# WIDTH, HEIGHT = 800, 600
-# screen = pygame.display.set_mode((WIDTH, HEIGHT))
-# pygame.display.set_caption("Mouse Drawing")
-
-# # Define colors
-# WHITE = (255, 255, 255)
-# BLACK = (0, 0, 0)
-
-# # Fill background with white
-# screen.fill(WHITE)
-
-# # Variables
-# running = True
-# drawing = False  # Track if mouse is pressed
-# draw_color = BLACK  # Default drawing color
-# radius = 5  # Brush size
-
-# # Main loop
-# while running:
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             running = False
-#         elif event.type == pygame.MOUSEBUTTONDOWN:
-#             drawing = True
-#         elif event.type == pygame.MOUSEBUTTONUP:
-#             drawing = False
-#         elif event.type == pygame.KEYDOWN:
-#             if event.key == pygame.K_c:  # Press 'C' to clear screen
-#                 screen.fill(WHITE)
-#             elif event.key == pygame.K_UP:  # Increase brush size
-#                 radius += 1
-#             elif event.key == pygame.K_DOWN:  # Decrease brush size
-#                 radius = max(1, radius - 1)
-    
-#     # Drawing with mouse movement
-#     if drawing:
-#         mouse_pos = pygame.mouse.get_pos()
-#         pygame.draw.circle(screen, draw_color, mouse_pos, radius)
-    
-#     pygame.display.update()
-
-# pygame.quit()
-
-# import turtle as t
-
-# # Initialize screen
-# screen = t.Screen()
-# screen.title("Handwriting Panel")
-# screen.bgcolor("white")
-
-# # Initialize the pen
-# pen = t.Turtle()
-# pen.speed(0)  # Fastest speed
-# pen.width(5)  # Set pen thickness
-# pen.color("black")
-# # pen.hideturtle()
-# pen.pendown()  # Ensure the pen is down to draw
-
-# # Function to handle drawing
-# def draw(x, y):
-#     pen.ondrag(None)  # Temporarily disable dragging to prevent lag
-#     pen.goto(x, y)
-#     pen.ondrag(draw)  # Re-enable dragging
-
-# # Function to clear the screen
-# def clear():
-#     pen.clear()
-
-# # Bind events
-# screen.listen()
-# pen.ondrag(draw)  # Enable drawing when dragging the mouse
-# screen.onscreenclick(lambda x, y: clear(), 3)  # Right-click to clear
-
-# # Start event loop
-# screen.mainloop()
-
-# # import turtle
-
-# # screen = turtle.Screen()
-# # pen = turtle.Turtle()
-# # pen.speed(0)  # Set drawing speed to fastest
-
-# # def draw(x, y):
-# #     pen.ondrag(None) # Prevent immediate retriggering during drag
-# #     pen.setheading(pen.towards(x, y))
-# #     pen.goto(x, y)
-# #     pen.ondrag(draw) # Re-enable drawing on drag
-
-# # def clear_screen(x, y):
-# #     pen.clear()
-
-# # screen.listen()
-# # pen.ondrag(draw)
-# # screen.onscreenclick(clear_screen, 3) # Clear screen on right click
-# # screen.mainloop()
