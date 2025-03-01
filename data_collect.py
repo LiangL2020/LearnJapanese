@@ -23,22 +23,33 @@ draw_color = BLACK
 last_pos = None 
 
 romaji = {
-    'a': 4, 'i': 2, 'u': 2, 'e': 4, 'o': 3, 
-    'ka': 3, 'ki': 2, 'ku': 3, 'ke': 6, 'ko': 3, 
-    'sa': 5, 'shi': 3, 'su': 5, 'se': 4, 'so': 3, 
-    'ta': 5, 'chi': 2, 'tsu': 6, 'te': 6, 'to': 4, 
-    'na': 3, 'ni': 5, 'nu': 4, 'ne': 4, 'no': 3, 
-    'ha': 4, 'hi': 5, 'fu': 3, 'he': 3, 'ho': 4, 
-    'ma': 5, 'mi': 5, 'mu': 6, 'me': 3, 'mo': 5, 
-    'ya': 6, 'yu': 4, 'yo': 3, 
-    'ra': 5, 'ri': 6, 'ru': 5, 're': 3, 'ro': 2, 
-    'wa': 2, 'wo': 5, 
-    'n': 4}
+    'a': 10, 'i': 10, 'u': 10, 'e': 10, 'o': 10, 
+    'ka': 10, 'ki': 10, 'ku': 10, 'ke': 9, 'ko': 10, 
+    'sa': 10, 'shi': 10, 'su': 10, 'se': 10, 'so': 10, 
+    'ta': 10, 'chi': 10, 'tsu': 10, 'te': 10, 'to': 10, 
+    'na': 10, 'ni': 9, 'nu': 10, 'ne': 10, 'no': 10, 
+    'ha': 10, 'hi': 10, 'fu': 10, 'he': 10, 'ho': 9, 
+    'ma': 10, 'mi': 10, 'mu': 10, 'me': 10, 'mo': 10, 
+    'ya': 10, 'yu': 10, 'yo': 10, 
+    'ra': 10, 'ri': 10, 'ru': 10, 're': 10, 'ro': 10, 
+    'wa': 10, 'wo': 10, 'n': 10}
 
 def select_weighted_romaji():
-    # total_count = sum(romaji.values()) + 1  
-    weights = [1 / (count + 1) for count in romaji.values()]  
-    return random.choices(list(romaji.keys()), weights=weights, k=1)[0]
+    filtered_romaji = {k: v for k, v in romaji.items() if v < 10}  # Exclude 10+ counts
+    if not filtered_romaji:
+        pygame.quit()
+        print("All romaji have reached 10 samples. Resetting counts.")
+        for k in romaji.keys():
+            romaji[k] = 0  # Reset counts
+        filtered_romaji = romaji  # Use all again
+
+    weights = [1 / (count + 1) for count in filtered_romaji.values()]
+    return random.choices(list(filtered_romaji.keys()), weights=weights, k=1)[0]
+
+# def select_weighted_romaji():
+#     # total_count = sum(romaji.values()) + 1  
+#     weights = [1 / (count + 1) for count in romaji.values()]  
+#     return random.choices(list(romaji.keys()), weights=weights, k=1)[0]
 
 current_romaji = select_weighted_romaji()
 # ga, gi, gu, ge, go,
