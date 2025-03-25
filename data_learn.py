@@ -14,15 +14,37 @@ import seaborn as sns
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
+from skimage.feature import hog
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
 
-model_type = "svm"
+model_type = "rf"
 char_type = ['hiragana', 'katakana']
 data_dir = os.path.join('.', 'data', char_type[0])
 X, y = [], []
 labels = []
 label_index = {}
+
+from skimage.feature import hog
+import cv2
+import numpy as np
+
+def preprocess_and_extract_hog(img_path, size=(32, 32)):
+    img_gray = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)  # Convert to grayscale
+    img_resized = cv2.resize(img_gray, size)  # Resize image
+    img_normalized = img_resized / 255.0  # Normalize pixel values
+
+    # Extract HOG features
+    hog_features = hog(
+        img_normalized, 
+        pixels_per_cell=(4, 4),  # Defines how small each cell is
+        cells_per_block=(2, 2),  # Defines how features are grouped
+        orientations=9,  # Number of gradient orientations
+        block_norm='L2-Hys',  
+        visualize=False  # Set to True for visualization
+    )
+    
+    return hog_features
 
 for file in os.listdir(data_dir):
     if file.endswith('.png'):
@@ -33,6 +55,7 @@ for file in os.listdir(data_dir):
         img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
         img = cv2.resize(img, (32, 32))  # Resize to fixed size
         img = img.flatten() / 255.0  # Normalize and flatten
+        # img = preprocess_and_extract_hog(img_path)
         
         # Store data
         if label not in label_index:
@@ -52,7 +75,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, stratif
 # Train model
 # model = KNeighborsClassifier(n_neighbors=5)
 # model = SVC(kernel='linear', probability=True)
-model = RandomForestClassifier(n_estimators=100, random_state=42)
+model = RandomForestClassifier(n_estimators=200, random_state=42)
 model.fit(X_train, y_train)
 
 # Save trained model

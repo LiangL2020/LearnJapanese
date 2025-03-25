@@ -23,22 +23,23 @@ draw_color = BLACK
 last_pos = None 
 
 romaji = {
-    'a': 10, 'i': 10, 'u': 10, 'e': 10, 'o': 10, 
-    'ka': 10, 'ki': 10, 'ku': 10, 'ke': 9, 'ko': 10, 
-    'sa': 10, 'shi': 10, 'su': 10, 'se': 10, 'so': 10, 
-    'ta': 10, 'chi': 10, 'tsu': 10, 'te': 10, 'to': 10, 
-    'na': 10, 'ni': 9, 'nu': 10, 'ne': 10, 'no': 10, 
-    'ha': 10, 'hi': 10, 'fu': 10, 'he': 10, 'ho': 9, 
-    'ma': 10, 'mi': 10, 'mu': 10, 'me': 10, 'mo': 10, 
-    'ya': 10, 'yu': 10, 'yo': 10, 
-    'ra': 10, 'ri': 10, 'ru': 10, 're': 10, 'ro': 10, 
-    'wa': 10, 'wo': 10, 'n': 10}
+    'a': 13, 'i': 15, 'u': 10, 'e': 11, 'o': 11, 
+    'ka': 12, 'ki': 13, 'ku': 10, 'ke': 12, 'ko': 12, 
+    'sa': 12, 'shi': 12, 'su': 10, 'se': 12, 'so': 14, 
+    'ta': 13, 'chi': 14, 'tsu': 13, 'te': 14, 'to': 14, 
+    'na': 13, 'ni': 13, 'nu': 13, 'ne': 13, 'no': 14, 
+    'ha': 12, 'hi': 13, 'fu': 14, 'he': 12, 'ho': 13, 
+    'ma': 11, 'mi': 15, 'mu': 11, 'me': 13, 'mo': 12, 
+    'ya': 13, 'yu': 11, 'yo': 17, 
+    'ra': 13, 'ri': 11, 'ru': 13, 're': 13, 'ro': 12, 
+    'wa': 13, 'wo': 14, 'n': 13}
 
 def select_weighted_romaji():
-    filtered_romaji = {k: v for k, v in romaji.items() if v < 10}  # Exclude 10+ counts
+    filtered_romaji = {k: v for k, v in romaji.items() if v < 10}  # Exclude v+ counts
     if not filtered_romaji:
         pygame.quit()
-        print("All romaji have reached 10 samples. Resetting counts.")
+        print(romaji)
+        print("All romaji have reached v samples. Resetting counts.")
         for k in romaji.keys():
             romaji[k] = 0  # Reset counts
         filtered_romaji = romaji  # Use all again
